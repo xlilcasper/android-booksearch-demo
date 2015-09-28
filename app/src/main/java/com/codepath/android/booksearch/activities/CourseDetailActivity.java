@@ -8,82 +8,42 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.ActionBarActivity;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.codepath.android.booksearch.R;
-import com.codepath.android.booksearch.models.Book;
-import com.codepath.android.booksearch.net.BookClient;
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.squareup.picasso.Picasso;
-
-import org.apache.http.Header;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.codepath.android.booksearch.models.Course;
+import com.codepath.android.booksearch.net.CourseClient;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class BookDetailActivity extends ActionBarActivity {
-    private ImageView ivBookCover;
+public class CourseDetailActivity extends ActionBarActivity {
     private TextView tvTitle;
     private TextView tvAuthor;
-    private TextView tvPublisher;
-    private TextView tvPageCount;
-    private BookClient client;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_detail);
         // Fetch views
-        ivBookCover = (ImageView) findViewById(R.id.ivBookCover);
         tvTitle = (TextView) findViewById(R.id.tvTitle);
         tvAuthor = (TextView) findViewById(R.id.tvAuthor);
-        tvPublisher = (TextView) findViewById(R.id.tvPublisher);
-        tvPageCount = (TextView) findViewById(R.id.tvPageCount);
-        // Use the book to populate the data into our views
-        Book book = (Book) getIntent().getSerializableExtra(BookListActivity.BOOK_DETAIL_KEY);
-        loadBook(book);
+
+        // Use the course to populate the data into our views
+        Course course = (Course) getIntent().getSerializableExtra(CourseListActivity.BOOK_DETAIL_KEY);
+        loadCourse(course);
     }
 
-    // Populate data for the book
-    private void loadBook(Book book) {
+    // Populate data for the course
+    private void loadCourse(Course course) {
         //change activity title
-        this.setTitle(book.getTitle());
-        // Populate data
-        Picasso.with(this).load(Uri.parse(book.getLargeCoverUrl())).error(R.drawable.ic_nocover).into(ivBookCover);
-        tvTitle.setText(book.getTitle());
-        tvAuthor.setText(book.getAuthor());
-        // fetch extra book data from books API
-        client = new BookClient();
-        client.getExtraBookDetails(book.getOpenLibraryId(), new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                try {
-                    if (response.has("publishers")) {
-                        // display comma separated list of publishers
-                        final JSONArray publisher = response.getJSONArray("publishers");
-                        final int numPublishers = publisher.length();
-                        final String[] publishers = new String[numPublishers];
-                        for (int i = 0; i < numPublishers; ++i) {
-                            publishers[i] = publisher.getString(i);
-                        }
-                        tvPublisher.setText(TextUtils.join(", ", publishers));
-                    }
-                    if (response.has("number_of_pages")) {
-                        tvPageCount.setText(Integer.toString(response.getInt("number_of_pages")) + " pages");
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        this.setTitle(course.getTitle());
+        tvTitle.setText(course.getTitle());
+        tvAuthor.setText(course.getInstructor());
     }
 
 

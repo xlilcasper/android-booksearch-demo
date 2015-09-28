@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,9 +14,9 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.codepath.android.booksearch.R;
-import com.codepath.android.booksearch.adapters.BookAdapter;
-import com.codepath.android.booksearch.models.Book;
-import com.codepath.android.booksearch.net.BookClient;
+import com.codepath.android.booksearch.adapters.CourseAdapter;
+import com.codepath.android.booksearch.models.Course;
+import com.codepath.android.booksearch.net.CourseClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.apache.http.Header;
@@ -26,11 +27,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 
-public class BookListActivity extends ActionBarActivity {
+public class CourseListActivity extends ActionBarActivity {
     public static final String BOOK_DETAIL_KEY = "book";
     private ListView lvBooks;
-    private BookAdapter bookAdapter;
-    private BookClient client;
+    private CourseAdapter courseAdapter;
+    private CourseClient client;
     private ProgressBar progress;
 
     @Override
@@ -38,11 +39,11 @@ public class BookListActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_list);
         lvBooks = (ListView) findViewById(R.id.lvBooks);
-        ArrayList<Book> aBooks = new ArrayList<Book>();
+        ArrayList<Course> aCourses = new ArrayList<Course>();
         // initialize the adapter
-        bookAdapter = new BookAdapter(this, aBooks);
+        courseAdapter = new CourseAdapter(this, aCourses);
         // attach the adapter to the ListView
-        lvBooks.setAdapter(bookAdapter);
+        lvBooks.setAdapter(courseAdapter);
         progress = (ProgressBar) findViewById(R.id.progress);
         setupBookSelectedListener();
     }
@@ -52,8 +53,8 @@ public class BookListActivity extends ActionBarActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Launch the detail view passing book as an extra
-                Intent intent = new Intent(BookListActivity.this, BookDetailActivity.class);
-                intent.putExtra(BOOK_DETAIL_KEY, bookAdapter.getItem(position));
+                Intent intent = new Intent(CourseListActivity.this, CourseDetailActivity.class);
+                intent.putExtra(BOOK_DETAIL_KEY, courseAdapter.getItem(position));
                 startActivity(intent);
             }
         });
@@ -64,29 +65,32 @@ public class BookListActivity extends ActionBarActivity {
     private void fetchBooks(String query) {
         // Show progress bar before making network request
         progress.setVisibility(ProgressBar.VISIBLE);
-        client = new BookClient();
-        client.getBooks(query, new JsonHttpResponseHandler() {
+        client = new CourseClient();
+        client.getCourse(query, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
+                    Log.d("Courses.CourseActivity", "Got data from webpage");
                     // hide progress bar
                     progress.setVisibility(ProgressBar.GONE);
                     JSONArray docs = null;
-                    if(response != null) {
+                    if (response != null) {
                         // Get the docs json array
-                        docs = response.getJSONArray("docs");
+                        docs = response.getJSONArray("courses");
                         // Parse json array into array of model objects
-                        final ArrayList<Book> books = Book.fromJson(docs);
-                        // Remove all books from the adapter
-                        bookAdapter.clear();
+                        final ArrayList<Course> courses = Course.fromJson(docs);
+                        // Remove all courses from the adapter
+                        courseAdapter.clear();
                         // Load model objects into the adapter
-                        for (Book book : books) {
-                            bookAdapter.add(book); // add book through the adapter
+                        for (Course course : courses) {
+                            courseAdapter.add(course); // add course through the adapter
                         }
-                        bookAdapter.notifyDataSetChanged();
+                        courseAdapter.notifyDataSetChanged();
                     }
                 } catch (JSONException e) {
                     // Invalid JSON format, show appropriate error.
+                    Log.e("Courses.CourseActivity", "Failed to get data from website");
+                    Log.e("Courses.CourseActivity", e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -115,7 +119,7 @@ public class BookListActivity extends ActionBarActivity {
                 searchView.setIconified(true);
                 searchItem.collapseActionView();
                 // Set activity title to search query
-                BookListActivity.this.setTitle(query);
+                CourseListActivity.this.setTitle(query);
                 return true;
             }
 
