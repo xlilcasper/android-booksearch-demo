@@ -39,7 +39,7 @@ public class Course implements Serializable {
         return prefix;
     }
 
-    public String getTitle() { return prefix+courseNumber; }
+    public String getTitle() { return getPrefix()+getCourseNumber(); }
     // Returns a Course given the expected JSON
     public static Course fromJson(JSONObject jsonObject) {
         Course course = new Course();

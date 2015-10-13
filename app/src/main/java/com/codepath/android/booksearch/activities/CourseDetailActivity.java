@@ -15,23 +15,26 @@ import android.widget.TextView;
 
 import com.codepath.android.booksearch.R;
 import com.codepath.android.booksearch.models.Course;
-import com.codepath.android.booksearch.net.CourseClient;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class CourseDetailActivity extends ActionBarActivity {
-    private TextView tvTitle;
-    private TextView tvAuthor;
+    private TextView courseTitle;
+    private TextView courseAuthor;
+    private TextView courseCredits;
+    private TextView courseDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_detail);
         // Fetch views
-        tvTitle = (TextView) findViewById(R.id.tvTitle);
-        tvAuthor = (TextView) findViewById(R.id.tvAuthor);
+        courseTitle = (TextView) findViewById(R.id.courseTitle);
+        courseAuthor = (TextView) findViewById(R.id.courseAuthor);
+        courseCredits = (TextView) findViewById(R.id.courseCredits);
+        courseDescription = (TextView) findViewById(R.id.courseDescription);
 
         // Use the course to populate the data into our views
         Course course = (Course) getIntent().getSerializableExtra(CourseListActivity.BOOK_DETAIL_KEY);
@@ -42,8 +45,10 @@ public class CourseDetailActivity extends ActionBarActivity {
     private void loadCourse(Course course) {
         //change activity title
         this.setTitle(course.getTitle());
-        tvTitle.setText(course.getTitle());
-        tvAuthor.setText(course.getInstructor());
+        courseTitle.setText(course.getTitle());
+        courseAuthor.setText(course.getInstructor());
+        courseCredits.setText(course.getCredit());
+        courseDescription.setText(course.getDescription());
     }
 
 
